@@ -40,7 +40,7 @@ impl Matrix {
                 let mut sum = 0.0;
 
                 for k in 0..self.cols {
-                    sum += self.data[i][k] = other.data[k][j];
+                    sum += self.data[i][k] * other.data[k][j];
                 }
                 res.data[i][j] = sum;
             }
