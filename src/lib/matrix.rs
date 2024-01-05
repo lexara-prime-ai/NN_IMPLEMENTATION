@@ -1,5 +1,6 @@
 use rand::{thread_rng, Rng};
 
+#[derive(Clone)]
 pub struct Matrix {
     pub rows: usize,
     pub cols: usize,
@@ -109,5 +110,16 @@ impl Matrix {
                 .map(|row| row.into_iter().map(|value| function(value)).collect())
                 .collect(),
         )
+    }
+
+    pub fn transpose(&mut self) -> Matrix {
+        let mut res = Matrix::zeros(self.rows, self.cols);
+
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                res.data[j][i] = self.data[i][j];
+            }
+        }
+        res
     }
 }
