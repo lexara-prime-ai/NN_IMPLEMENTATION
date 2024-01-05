@@ -14,7 +14,7 @@ impl Network<'_> {
         let mut weights = vec![];
         let mut biases = vec![];
 
-        for i in 0..layers.len() {
+        for i in 0..layers.len() - 1 {
             weights.push(Matrix::random(layers[i + 1], layers[i]));
             biases.push(Matrix::random(layers[i + 1], 1));
         }
@@ -52,6 +52,8 @@ impl Network<'_> {
     }
 
     // Back propagation
+    // Find errors and use the gradient matrix to find out what went wrong
+    // and tweak the weights to get a better result
     pub fn back_propagate(&mut self, outputs: Vec<f64>, targets: Vec<f64>) {
         if targets.len() != self.layers[self.layers.len() - 1] {
             panic!("Invalida no. of targets");
@@ -67,6 +69,27 @@ impl Network<'_> {
             gradients = gradients
                 .dot_multiply(&errors)
                 .map(&|x| x * self.learning_rate);
+
+            self.weights[i] = self.weights[i].add(&gradients.multiply(&self.data[i].transpose()));
+            // Subtract...add?
+            self.biases[i] = self.biases[i].add(&gradients);
+
+            errors = self.weights[i].transpose().multiply(&errors);
+            gradients = self.data[i].map(self.activation.derivative);
+        }
+    }
+
+    // epochs -> The number of times we want to cycle through the targets
+    pub fn train(&mut self, inputs: Vec<Vec<f64>>, targets: Vec<Vec<f64>>, epochs: u16) {
+        for i in 1..=epochs {
+            if epochs < 100 || i % (epochs / 100) == 0 {
+                println!("Epoch {} of {}", i, epochs);
+            }
+        }
+
+        for j in 0..inputs.len() {
+            let outputs = self.feed_forward(inputs[j].clone());
+            self.back_propagate(outputs, targets[j].clone());
         }
     }
 }
