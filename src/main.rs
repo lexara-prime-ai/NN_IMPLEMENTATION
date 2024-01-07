@@ -2,6 +2,8 @@ use lib::{activations::SIGMOID, network::Network};
 
 pub mod lib;
 
+// Todo -> Review matrix library
+
 fn main() {
     // the truth table of the XOR (exclusive or)
 
