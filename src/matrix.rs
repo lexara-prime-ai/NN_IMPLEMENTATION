@@ -1,4 +1,5 @@
 use rand::{thread_rng, Rng};
+use std::fmt::{Debug, Formatter, Result};
 
 #[derive(Clone)]
 pub struct Matrix {
@@ -29,9 +30,9 @@ impl Matrix {
         res
     }
 
-    pub fn multiply(&mut self, other: &Matrix) -> Matrix {
+    pub fn multiply(&self, other: &Matrix) -> Self {
         if self.cols != other.rows {
-            panic!("Attempted to multiply by matrix of incorrect dimensions");
+            panic!("Attempted to multiply matrices with different dimensions");
         }
 
         let mut res = Matrix::zeros(self.rows, other.cols);
@@ -49,9 +50,9 @@ impl Matrix {
         res
     }
 
-    pub fn add(&mut self, other: &Matrix) -> Matrix {
+    pub fn add(&self, other: &Matrix) -> Self {
         if self.rows != other.rows || self.cols != other.cols {
-            panic!("Attempted to add matrices with different dimensions");
+            panic!("Attempted to add matrices with incorrect dimensions");
         }
 
         let mut res = Matrix::zeros(self.rows, self.cols);
@@ -64,7 +65,7 @@ impl Matrix {
         res
     }
 
-    pub fn subtract(&mut self, other: &Matrix) -> Matrix {
+    pub fn subtract(&self, other: &Matrix) -> Self {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Attempted to add matrices with different dimensions");
         }
@@ -79,7 +80,7 @@ impl Matrix {
         res
     }
 
-    pub fn dot_multiply(&mut self, other: &Matrix) -> Matrix {
+    pub fn dot_multiply(&self, other: &Matrix) -> Self {
         if self.rows != other.rows || self.cols != other.cols {
             panic!("Attempted to multiply matrices with different dimensions");
         }
@@ -94,16 +95,16 @@ impl Matrix {
         res
     }
 
-    pub fn from(data: Vec<Vec<f64>>) -> Matrix {
-        Matrix {
+    pub fn from(data: Vec<Vec<f64>>) -> Self {
+        Self {
             rows: data.len(),
             cols: data[0].len(),
             data,
         }
     }
 
-    pub fn map(&mut self, function: &dyn Fn(f64) -> f64) -> Matrix {
-        Matrix::from(
+    pub fn map(&self, function: &dyn Fn(f64) -> f64) -> Self {
+        Self::from(
             (self.data)
                 .clone()
                 .into_iter()
@@ -112,7 +113,7 @@ impl Matrix {
         )
     }
 
-    pub fn transpose(&mut self) -> Matrix {
+    pub fn transpose(&self) -> Self {
         let mut res = Matrix::zeros(self.cols, self.rows);
 
         for i in 0..self.rows {
@@ -121,5 +122,24 @@ impl Matrix {
             }
         }
         res
+    }
+}
+
+impl Debug for Matrix {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(
+            f,
+            "Matrix {{\n{}\n}}",
+            (&self.data)
+                .into_iter()
+                .map(|row| " ".to_string()
+                    + &row
+                        .into_iter()
+                        .map(|value| value.to_string())
+                        .collect::<Vec<String>>()
+                        .join(" "))
+                .collect::<Vec<String>>()
+                .join("\n")
+        )
     }
 }
